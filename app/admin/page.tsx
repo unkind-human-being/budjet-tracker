@@ -32,6 +32,10 @@ export default function AdminDashboard() {
 
   return (
     <main className="p-6 min-h-screen bg-slate-900 text-white">
+        {/* BIG TITLE */}
+      <h1 className="text-4xl font-extrabold text-center mb-6 tracking-wide">
+        Budget Tracker
+      </h1>
       <h1 className="text-3xl font-bold">Admin Dashboard</h1>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
