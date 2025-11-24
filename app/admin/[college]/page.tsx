@@ -18,13 +18,13 @@ export default function AdminCollegeView() {
   const [filterMonth, setFilterMonth] = useState("");
   const [filterYear, setFilterYear] = useState("");
 
-  // Security → only admin
+  // SECURITY → Only Admin
   useEffect(() => {
     const role = localStorage.getItem("role");
     if (role !== "admin") router.push("/login");
   }, [router]);
 
-  // Load expenses (sorted)
+  // LOAD EXPENSES
   useEffect(() => {
     const ref = query(
       collection(db, "expenses", college.toUpperCase(), "items"),
@@ -34,16 +34,16 @@ export default function AdminCollegeView() {
     const unsub = onSnapshot(ref, (snap) => {
       const list = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
       setItems(list);
-      setFiltered(list); // default show all
+      setFiltered(list);
     });
 
     return () => unsub();
   }, [college]);
 
-  // Total
+  // CALCULATE TOTAL
   const total = filtered.reduce((a, b) => a + b.amount, 0);
 
-  // Filters
+  // FILTER SYSTEM
   const applyFilters = () => {
     let list = items;
 
@@ -54,14 +54,18 @@ export default function AdminCollegeView() {
 
     if (filterMonth) {
       list = list.filter((i) => {
-        const dt = new Date(i.createdAt.toDate ? i.createdAt.toDate() : i.createdAt);
+        const dt = new Date(
+          i.createdAt.toDate ? i.createdAt.toDate() : i.createdAt
+        );
         return dt.getMonth() + 1 === Number(filterMonth);
       });
     }
 
     if (filterYear) {
       list = list.filter((i) => {
-        const dt = new Date(i.createdAt.toDate ? i.createdAt.toDate() : i.createdAt);
+        const dt = new Date(
+          i.createdAt.toDate ? i.createdAt.toDate() : i.createdAt
+        );
         return dt.getFullYear() === Number(filterYear);
       });
     }
@@ -75,53 +79,57 @@ export default function AdminCollegeView() {
       {/* Back Button */}
       <button
         onClick={() => router.push("/admin")}
-        className="mb-4 bg-slate-700 p-2 rounded hover:bg-slate-600"
+        className="mb-4 bg-slate-700 p-2 rounded-lg shadow hover:bg-slate-600 transition"
       >
         ← Back
       </button>
 
       {/* Title */}
-      <h1 className="text-3xl font-bold mb-2">
+      <h1 className="text-3xl font-extrabold mb-2 tracking-wide">
         {college.toUpperCase()} — Expenses
       </h1>
 
-      {/* Total Card */}
-      <div className="bg-slate-800 p-5 rounded-xl shadow-lg mb-6">
-        <h2 className="text-xl font-semibold">TOTAL EXPENSES</h2>
-        <p className="text-3xl font-bold text-green-400 mt-1">₱{total}</p>
+      {/* Total */}
+      <div className="bg-slate-800 p-5 rounded-xl shadow-xl border border-white/10 mb-6">
+        <h2 className="text-xl font-semibold opacity-90">Total Expenses</h2>
+        <p className="text-4xl font-bold mt-1 text-green-400 drop-shadow">
+          ₱{total}
+        </p>
       </div>
 
-      {/* Filter Section */}
-      <div className="bg-slate-800 p-5 rounded-xl shadow-lg mb-6">
-        <h3 className="text-lg font-semibold mb-3">Filter Expenses</h3>
+      {/* Filters */}
+      <div className="bg-slate-800 p-5 rounded-xl shadow-xl border border-white/10 mb-8">
+        <h3 className="text-lg font-semibold mb-4">Filter Expenses</h3>
 
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-3 mb-4">
-          {/* Filter by exact date */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          {/* Date */}
           <input
             type="date"
-            className="p-2 bg-slate-700 rounded"
+            className="p-3 bg-slate-700 rounded-xl border border-white/10 focus:ring focus:ring-blue-500/40"
             value={filterDate}
             onChange={(e) => setFilterDate(e.target.value)}
           />
 
-          {/* Filter by month */}
+          {/* Month */}
           <select
-            className="p-2 bg-slate-700 rounded"
+            className="p-3 bg-slate-700 rounded-xl border border-white/10 focus:ring focus:ring-blue-500/40"
             value={filterMonth}
             onChange={(e) => setFilterMonth(e.target.value)}
           >
             <option value="">Month</option>
             {[...Array(12)].map((_, i) => (
               <option key={i} value={i + 1}>
-                {new Date(0, i).toLocaleString("en-US", { month: "long" })}
+                {new Date(0, i).toLocaleString("en-US", {
+                  month: "long",
+                })}
               </option>
             ))}
           </select>
 
-          {/* Filter by year */}
+          {/* Year */}
           <input
-            className="p-2 bg-slate-700 rounded"
-            placeholder="Year (2024)"
+            className="p-3 bg-slate-700 rounded-xl border border-white/10 focus:ring focus:ring-blue-500/40"
+            placeholder="Year (e.g. 2024)"
             value={filterYear}
             onChange={(e) => setFilterYear(e.target.value)}
           />
@@ -129,17 +137,17 @@ export default function AdminCollegeView() {
           {/* Button */}
           <button
             onClick={applyFilters}
-            className="bg-blue-600 hover:bg-blue-700 p-2 rounded font-semibold"
+            className="bg-blue-600 hover:bg-blue-700 p-3 rounded-xl font-semibold shadow transition"
           >
             Apply Filters
           </button>
         </div>
       </div>
 
-      {/* Expense List */}
-      <h3 className="text-lg font-semibold mb-3">Expenses</h3>
+      {/* EXPENSE LIST */}
+      <h3 className="text-xl font-semibold mb-3">Expenses</h3>
 
-      <div className="space-y-3">
+      <div className="space-y-4">
         {filtered.length === 0 && (
           <p className="text-slate-400">No expenses found.</p>
         )}
@@ -147,11 +155,22 @@ export default function AdminCollegeView() {
         {filtered.map((e) => (
           <div
             key={e.id}
-            className="bg-slate-800 p-4 rounded-xl shadow border border-slate-700"
+            className="bg-slate-800 p-4 rounded-xl shadow-lg border border-white/10 hover:border-blue-500/30 transition"
           >
-            <div className="flex justify-between">
-              <p className="font-bold">{e.desc}</p>
-              <p className="text-green-300 text-lg">₱{e.amount}</p>
+            {/* IMAGE PREVIEW */}
+            {e.imageUrl && (
+              <img
+                src={e.imageUrl}
+                alt="Expense Photo"
+                className="w-32 h-32 object-cover rounded-xl mb-3 border border-white/20 shadow"
+              />
+            )}
+
+            <div className="flex justify-between items-center">
+              <p className="font-bold text-lg">{e.desc}</p>
+              <p className="text-green-300 text-2xl font-semibold">
+                ₱{e.amount}
+              </p>
             </div>
 
             <p className="text-sm text-slate-400 mt-1">{e.displayDate}</p>
